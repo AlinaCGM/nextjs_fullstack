@@ -17,18 +17,23 @@ export default function SignupPage() {
 
   const onSignup = async () => {
     try {
-      setLoading(true);
-      const response = await axios.post("/api/users/signup", user);
+      setLoading(true); // Begin loading state
+      const response = await axios.post("http://localhost:3000/api/users/signup", user);
       console.log("Signup success", response.data);
       router.push("/login");
     } catch (error: any) {
-      console.log("Signup failed", error.message);
-
-      toast.error(error.message);
+      console.log("Signup failed", error.response?.data || error.message);
+  
+      if (error.response?.data.error.includes("Invalid signup")) {
+        toast.error("Error during email sending. Please contact support.");
+      } else {
+        toast.error(error.response?.data.message || error.message);
+      }
     } finally {
-      setLoading(false);
+      setLoading(false); // End loading state
     }
   };
+  
 
   useEffect(() => {
     if (
